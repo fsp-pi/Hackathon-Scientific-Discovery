@@ -1,0 +1,11 @@
+[team]
+name = "{team_name}"
+working_dir = "agents/{team_name}/files"
+
+[models]
+run_agent_model = "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
+review_agent_model = "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
+
+[tools]
+code_execution_timeout = 300
+search_max_results = 10

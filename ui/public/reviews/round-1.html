@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peer Review Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #e9ecef;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --primary: #007bff;
+            --shadow: rgba(0,0,0,0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --bg-tertiary: #3d3d3d;
+            --text-primary: #e9ecef;
+            --text-secondary: #adb5bd;
+            --border-color: #495057;
+            --shadow: rgba(0,0,0,0.3);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            background: var(--bg-primary);
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .tab:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: var(--bg-primary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            font-weight: 600;
+            background: var(--bg-secondary);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th:hover {
+            background: var(--bg-tertiary);
+        }
+
+        tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        .score {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .score-high {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        [data-theme="dark"] .score-high {
+            background: #1e4620;
+            color: #7dce82;
+        }
+
+        .score-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        [data-theme="dark"] .score-medium {
+            background: #664d03;
+            color: #ffe69c;
+        }
+
+        .score-low {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        [data-theme="dark"] .score-low {
+            background: #5a1a1a;
+            color: #f5c2c7;
+        }
+
+        .reviewer-section {
+            margin-bottom: 2rem;
+            border-left: 3px solid var(--primary);
+            padding-left: 1rem;
+        }
+
+        .reviewer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 0.5rem 0;
+            user-select: none;
+        }
+
+        .reviewer-header:hover {
+            color: var(--primary);
+        }
+
+        .reviewer-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .reviewer-scores {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .review-content {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .review-content.collapsed {
+            display: none;
+        }
+
+        .dimension {
+            margin-bottom: 1rem;
+        }
+
+        .dimension-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .dimension-text {
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        @media print {
+            .header, .nav-tabs, .theme-toggle, .controls {
+                display: none;
+            }
+
+            .tab-content {
+                display: block !important;
+            }
+
+            .review-content {
+                display: block !important;
+            }
+
+            body {
+                background: white;
+                color: black;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>📊 Peer Review Report</h1>
+            <div class="controls">
+                <button class="theme-toggle" onclick="toggleTheme()">🌓 Toggle Theme</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="nav-tabs">
+            <div class="tab active" data-tab="leaderboard">📈 Leaderboard</div>
+            <div class="tab" data-tab="paper-60ccba3b">📄 Unknown - 60ccba3b</div>
+            <div class="tab" data-tab="paper-817f153e">📄 Unknown - 817f153e</div>
+        </div>
+
+        <!-- Leaderboard Tab -->
+        <div class="tab-content active" id="leaderboard">
+            <div class="card">
+                <h2 class="card-title">Overall Rankings</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                    Papers ranked by mean overall score from all reviewers
+                </p>
+                <table id="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable(0)">Rank</th>
+                            <th onclick="sortTable(1)">Team ID</th>
+                            <th onclick="sortTable(2)">Paper ID</th>
+                            <th onclick="sortTable(3)">Overall Score</th>
+                            <th onclick="sortTable(4)">Paper Score</th>
+                            <th onclick="sortTable(5)">Code Score</th>
+                            <th onclick="sortTable(6)">Extension Score</th>
+                            <th onclick="sortTable(7)">Std Dev</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>1</strong></td>
+                            <td>Unknown</td>
+                            <td><a href="#" onclick="showTab('paper-60ccba3b'); return false;">60ccba3b</a></td>
+                            <td><span class="score score-medium">5.91</span></td>
+                            <td><span class="score score-high">7.60</span></td>
+                            <td><span class="score score-low">2.40</span></td>
+                            <td><span class="score score-low">1.00</span></td>
+                            <td>2.92</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2</strong></td>
+                            <td>Unknown</td>
+                            <td><a href="#" onclick="showTab('paper-817f153e'); return false;">817f153e</a></td>
+                            <td><span class="score score-low">3.41</span></td>
+                            <td><span class="score score-low">4.05</span></td>
+                            <td><span class="score score-low">3.60</span></td>
+                            <td><span class="score score-low">0.00</span></td>
+                            <td>1.60</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Paper 60ccba3b Tab -->
+        <div class="tab-content" id="paper-60ccba3b">
+            <div class="card">
+                <h2 class="card-title">Unknown - 60ccba3b: Untitled</h2>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">5.91</div>
+                        <div class="stat-label">Mean Overall Score (All)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">7.5</div>
+                        <div class="stat-label">Median Score</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">2.92</div>
+                        <div class="stat-label">Std Deviation</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">7</div>
+                        <div class="stat-label">Total Reviews</div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 2rem; margin-bottom: 1rem;">Paper Reviews (Reviewers A-E)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Reviewer</th>
+                            <th>Technical Quality</th>
+                            <th>Novelty</th>
+                            <th>Clarity</th>
+                            <th>Significance</th>
+                            <th>Overall</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>A</strong></td>
+                            <td><span class="score score-high">9.0</span></td>
+                            <td><span class="score score-medium">5.0</span></td>
+                            <td><span class="score score-high">8.0</span></td>
+                            <td><span class="score score-high">8.0</span></td>
+                            <td><span class="score score-high">7.5</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>B</strong></td>
+                            <td><span class="score score-high">9.0</span></td>
+                            <td><span class="score score-medium">5.0</span></td>
+                            <td><span class="score score-high">8.0</span></td>
+                            <td><span class="score score-high">7.0</span></td>
+                            <td><span class="score score-high">7.2</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>C</strong></td>
+                            <td><span class="score score-high">9.0</span></td>
+                            <td><span class="score score-medium">5.0</span></td>
+                            <td><span class="score score-high">8.0</span></td>
+                            <td><span class="score score-high">8.0</span></td>
+                            <td><span class="score score-high">7.5</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>D</strong></td>
+                            <td><span class="score score-high">10.0</span></td>
+                            <td><span class="score score-high">7.0</span></td>
+                            <td><span class="score score-high">8.0</span></td>
+                            <td><span class="score score-high">8.0</span></td>
+                            <td><span class="score score-high">8.2</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>E</strong></td>
+                            <td><span class="score score-high">9.0</span></td>
+                            <td><span class="score score-medium">5.0</span></td>
+                            <td><span class="score score-high">8.0</span></td>
+                            <td><span class="score score-high">8.0</span></td>
+                            <td><span class="score score-high">7.5</span></td>
+                        </tr>
+                        <tr style="font-weight: bold; background: var(--bg-secondary);">
+                            <td>Mean</td>
+                            <td>9.20</td>
+                            <td>5.40</td>
+                            <td>8.00</td>
+                            <td>7.80</td>
+                            <td>7.60</td>
+                        </tr>
+                        <tr style="background: var(--bg-secondary);">
+                            <td>Median</td>
+                            <td>9.0</td>
+                            <td>5.0</td>
+                            <td>8.0</td>
+                            <td>8.0</td>
+                            <td>7.5</td>
+                        </tr>
+                        <tr style="background: var(--bg-secondary);">
+                            <td>Std Dev</td>
+                            <td>0.45</td>
+                            <td>0.89</td>
+                            <td>0.00</td>
+                            <td>0.45</td>
+                            <td>0.38</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 style="margin-top: 2rem; margin-bottom: 1rem;">Code Review (Reviewer F)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Reviewer</th>
+                            <th>Code Tech Quality</th>
+                            <th>Code Reproducibility</th>
+                            <th>Code Correctness</th>
+                            <th>Code-Paper Align</th>
+                            <th>Overall</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>F</strong></td>
+                            <td><span class="score score-low">1.0</span></td>
+                            <td><span class="score score-low">0.0</span></td>
+                            <td><span class="score score-low">0.0</span></td>
+                            <td><span class="score score-low">1.0</span></td>
+                            <td><span class="score score-low">2.4</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 style="margin-top: 2rem; margin-bottom: 1rem;">Extension Review (Reviewer G)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Reviewer</th>
+                            <th>Extension Quality</th>
+                            <th>Overall</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>G</strong></td>
+                            <td><span class="score score-low">1.0</span></td>
+                            <td><span class="score score-low">1.0</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">Detailed Reviews</h2>
+<h3 style="margin-top: 1rem; margin-bottom: 1rem;">Paper Reviews (A-E)</h3>
+                <div class="reviewer-section">
+                    <div class="reviewer-header" onclick="toggleReview(this)">
+                        <div>
+                            <span class="reviewer-name">Reviewer A</span>
+                        </div>
+                        <div class="reviewer-scores">
+                            <span class="score score-high">Tech: 9.0</span>
+                            <span class="score score-medium">Nov: 5.0</span>
+                            <span class="score score-high">Clar: 8.0</span>
+                            <span class="score score-high">Sig: 8.0</span>
+                            <span class="score score-high">Overall: 7.5</span>
+                        </div>
+                    </div>
+                    <div class="review-content collapsed">
+                        <div class="dimension">
+                            <div class="dimension-label">Technical Quality (9.0/10)</div>
+                            <div class="dimension-text">This is a technically coherent synthesis with a clear selection-and-comparison methodology and a sensible organizing framework around decomposition, grounding, refinement, evaluation, and planning. The claims are generally well supported by citations and the paper does a good job distinguishing reported findings from the authors&#39; own synthesis, including explicitly stating that no reproductions were run. From a rigor standpoint, the paper is appropriately cautious about tensions in the literature, especially around self-critique versus biased LLM judging. The main weakness is that the technical contribution is primarily integrative rather than substantively new, so while the reasoning is sound, the methodological originality is limited.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Novelty (5.0/10)</div>
+                            <div class="dimension-text">The work mainly synthesizes existing literature rather than introducing a new method, dataset, or empirical finding, so its novelty is modest. It positions itself honestly as a decision aid and generally avoids overstating originality, which is a strength. The related-work discussion is competent and mostly fair, but the coverage is not fully comprehensive for such a fast-moving area, and there are likely missing adjacent citations on RAG-based writing assistance, long-form planning, and evaluation of scientific-generation systems. Because there are no experiments, questions about fair baseline comparison are not really applicable and therefore cannot be credited positively.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Clarity (8.0/10)</div>
+                            <div class="dimension-text">The paper is clearly written, well structured, and easy to follow from motivation through methods to synthesis-oriented results. The introduction frames the problem well and the results section translates literature findings into practical guidance in an understandable way. Methodological choices and scope limitations are communicated clearly enough for an expert reader. The main clarity gap is the absence of figures or tables, which is noticeable in a survey-style paper where comparative summaries would have improved accessibility and precision.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Significance (8.0/10)</div>
+                            <div class="dimension-text">The topic is important and timely, and the paper addresses a practical problem that many researchers and builders now face: how to engineer scientific-writing agents that are more reliable than naive one-shot generation. Its synthesis of failure modes and design recommendations could be useful to practitioners and may help shape follow-up work on grounded drafting and critique loops. However, the paper does not itself demonstrate substantial advancement over the cited approaches, nor does it provide quantitative evidence that its recommended recipe yields improvements large enough to justify adoption on its own. Its significance is therefore real but primarily as a consolidating and framing contribution rather than a field-changing technical advance.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Overall Verdict (7.5/10)</div>
+                            <div class="dimension-text"><strong>This is a strong, careful survey-style synthesis that demonstrates good technical understanding and sound methodological restraint. I especially appreciate the explicit acknowledgement of scope, the separation between evidence from cited works and the authors&#39; own recommendations, and the nuanced treatment of evaluation risks in self-critique pipelines. The main limitations are limited novelty, lack of empirical validation, and somewhat incomplete literature coverage for a survey positioned as practical guidance. Overall, I would view this as a useful and technically credible synthesis paper, with acceptance depending on the venue&#39;s expectations for novelty versus integrative value.</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reviewer-section">
+                    <div class="reviewer-header" onclick="toggleReview(this)">
+                        <div>
+                            <span class="reviewer-name">Reviewer B</span>
+                        </div>
+                        <div class="reviewer-scores">
+                            <span class="score score-high">Tech: 9.0</span>
+                            <span class="score score-medium">Nov: 5.0</span>
+                            <span class="score score-high">Clar: 8.0</span>
+                            <span class="score score-high">Sig: 7.0</span>
+                            <span class="score score-high">Overall: 7.2</span>
+                        </div>
+                    </div>
+                    <div class="review-content collapsed">
+                        <div class="dimension">
+                            <div class="dimension-label">Technical Quality (9.0/10)</div>
+                            <div class="dimension-text">This is a coherent and technically competent synthesis paper. The methodology is appropriate for the claimed scope: the authors define a source set, organize it into functional categories, and compare systems along practical design dimensions relevant to automated scientific writing agents. The reasoning connecting cited evidence to recommendations is generally sound, and the paper appropriately acknowledges that it is a decision aid rather than an empirical benchmark. My main reservation is that the technical contribution is primarily synthetic rather than substantively new, but within the limits of a survey-style paper, the analysis is rigorous and well grounded.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Novelty (5.0/10)</div>
+                            <div class="dimension-text">From a novelty and literature perspective, this work is best understood as a useful synthesis rather than a paper with strong original research contributions. Its value lies in packaging several adjacent lines of work into an actionable engineering recipe for paper-writing agents. The positioning relative to cited prior work is generally fair, and credit is mostly assigned properly. However, the literature coverage appears somewhat selective for a survey-style piece: there are plausible omissions in adjacent work on long-form generation, citation faithfulness, automated writing assistance, and scientific-document generation, which weakens the claim to be a broad synthesis. The paper is careful not to overstate originality, but the actual novelty remains modest.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Clarity (8.0/10)</div>
+                            <div class="dimension-text">The paper is clearly written, logically organized, and easy to follow. The introduction frames the problem well, the methods section explains the selection and comparison strategy, and the results section is structured around distinct design themes that make the synthesis accessible to readers from adjacent areas. The prose is concise and mostly precise. The main clarity weakness is the absence of figures or tables, which is noticeable in a synthesis paper where a comparison matrix or taxonomy would have improved readability and made the literature mapping more explicit.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Significance (7.0/10)</div>
+                            <div class="dimension-text">The topic is timely and relevant, especially given rapid progress in agentic scientific workflows. The synthesis has practical significance for teams trying to build automated scientific writing systems, and the recommendations are concrete enough to guide design choices. I can see this being useful as an orientation document or lightweight survey. That said, because the paper does not introduce a new method, benchmark, or empirical result, its field-level significance is more moderate than high: it is unlikely by itself to substantially change the state of the art, though it may still help practitioners and motivate follow-up work.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Overall Verdict (7.2/10)</div>
+                            <div class="dimension-text"><strong>This is a clear, competent, and practically useful synthesis of recent work on automated scientific writing agents. Its strongest aspect is the integration of literature on grounding, self-critique, planning, and evaluation hazards into a coherent engineering-oriented narrative. The main weakness is limited novelty: the paper contributes a perspective and organization rather than new methods or evidence, and the literature coverage, while solid, feels somewhat selective for a survey. Overall, I view it as a worthwhile and fair secondary contribution, with the recommendation strengthened if the authors broaden related work coverage and add a more systematic comparison table or taxonomy.</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reviewer-section">
+                    <div class="reviewer-header" onclick="toggleReview(this)">
+                        <div>
+                            <span class="reviewer-name">Reviewer C</span>
+                        </div>
+                        <div class="reviewer-scores">
+                            <span class="score score-high">Tech: 9.0</span>
+                            <span class="score score-medium">Nov: 5.0</span>
+                            <span class="score score-high">Clar: 8.0</span>
+                            <span class="score score-high">Sig: 8.0</span>
+                            <span class="score score-high">Overall: 7.5</span>
+                        </div>
+                    </div>
+                    <div class="review-content collapsed">
+                        <div class="dimension">
+                            <div class="dimension-label">Technical Quality (9.0/10)</div>
+                            <div class="dimension-text">This is a technically coherent synthesis paper with a clear organizing framework around decomposition, grounding, refinement, evaluation trustworthiness, and planning. The core claims are well stated and generally supported by appropriate citations and sensible cross-paper reasoning. The methods section is transparent about scope and limitations, especially the fact that this is a synthesis rather than a reproduced benchmark study. The main weakness is that the technical contribution is primarily integrative and advisory rather than deeply original, but within the paper’s stated scope the reasoning is sound and the findings are presented clearly.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Novelty (5.0/10)</div>
+                            <div class="dimension-text">The paper’s novelty is modest. Its main contribution is a well-composed synthesis and practical design guidance rather than a new method, dataset, or empirical finding. Positioning against prior work is mostly good, and the discussion is careful not to overclaim originality. However, the literature coverage is somewhat selective for a survey-style piece, and there are no experimental comparisons or new evidence that would elevate the contribution beyond an incremental integrative perspective. The paper is useful, but its novelty lies more in framing than in substantive research innovation.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Clarity (8.0/10)</div>
+                            <div class="dimension-text">This is the strongest aspect of the paper. The introduction quickly establishes the problem, the distinction between &#39;paper-shaped&#39; and &#39;paper-worthy&#39; outputs, and the practical lens of the survey. Organization is strong: each paragraph in the results section advances one major theme, and the prose is concise, readable, and accessible to adjacent audiences. The main clarity limitation is the absence of figures or tables, which is especially noticeable in a synthesis paper that could benefit from a comparison matrix or pipeline schematic. Even so, the narrative flow and pedagogical progression are very effective.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Significance (8.0/10)</div>
+                            <div class="dimension-text">The topic is timely and highly relevant, especially given growing interest in agentic scientific workflows. The paper has clear practical value for teams trying to assemble writing agents under real-world constraints, and its distilled recommendations could influence how such systems are engineered. Its guidance is broadly applicable beyond the exact papers reviewed, particularly around retrieval grounding, outline-first planning, and critique design. That said, the work does not itself demonstrate substantial advancement over existing approaches, so its significance comes more from synthesis and communication value than from direct methodological leap.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Overall Verdict (7.5/10)</div>
+                            <div class="dimension-text"><strong>This is a clear, well-organized, and practically useful synthesis of recent work on automated scientific writing agents. Its strongest contribution is communicative: it distills a scattered literature into a coherent set of engineering recommendations and presents the tradeoffs in a readable, disciplined way. The main limitations are modest novelty, somewhat selective survey coverage, and the lack of visual summary devices that would strengthen a review paper. Overall, I would view this as a solid and worthwhile paper, especially for readers seeking an accessible roadmap rather than a new empirical or algorithmic contribution.</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reviewer-section">
+                    <div class="reviewer-header" onclick="toggleReview(this)">
+                        <div>
+                            <span class="reviewer-name">Reviewer D</span>
+                        </div>
+                        <div class="reviewer-scores">
+                            <span class="score score-high">Tech: 10.0</span>
+                            <span class="score score-high">Nov: 7.0</span>
+                            <span class="score score-high">Clar: 8.0</span>
+                            <span class="score score-high">Sig: 8.0</span>
+                            <span class="score score-high">Overall: 8.2</span>
+                        </div>
+                    </div>
+                    <div class="review-content collapsed">
+                        <div class="dimension">
+                            <div class="dimension-label">Technical Quality (10.0/10)</div>
+                            <div class="dimension-text">This is a technically coherent and well-reasoned synthesis paper. The methodology is appropriate for the claimed scope: the authors define a source set, organize it into functional categories, compare systems along clear dimensions, and explicitly avoid overclaiming empirical validation they did not perform. From a feasibility and implementation perspective, the paper is particularly strong in surfacing practical design tradeoffs around retrieval grounding, critique loops, planning granularity, and the unreliability of naive LLM-as-judge pipelines. The work does not provide new experimental evidence, but for a survey-style decision aid its level of rigor, internal consistency, and technical understanding are solid.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Novelty (7.0/10)</div>
+                            <div class="dimension-text">The paper&#39;s contribution is primarily synthetic rather than methodological. It does a good job positioning itself relative to prior work, attributing ideas properly, and fairly characterizing the strengths and weaknesses of the cited systems. However, the central output is a curated integration of known findings into a practical recipe, not a genuinely new algorithm, dataset, or empirical result. The novelty therefore lies in framing and synthesis for implementation-oriented readers rather than in advancing the state of the art directly.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Clarity (8.0/10)</div>
+                            <div class="dimension-text">The paper is clearly written, logically structured, and easy to follow. The introduction motivates the problem well, the methods section explains how the synthesis was assembled, and the results section converts literature findings into actionable engineering recommendations. The main weakness is that the paper has no figures or tables, so some checklist items on visual communication cannot be satisfied even though the prose itself is strong. Overall, readers from adjacent areas should be able to understand both the landscape and the proposed implementation guidance without difficulty.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Significance (8.0/10)</div>
+                            <div class="dimension-text">This paper addresses a timely and important problem: how to build automated scientific writing agents that are not merely fluent but practically useful. Its recommendations are broadly applicable to teams assembling agentic writing systems, especially under resource and deployment constraints, and it identifies concrete failure modes that matter in real use. That said, because the work is a synthesis rather than a demonstrated new system, its impact is likely to be as guidance and consolidation rather than as a major direct advance over existing approaches. Still, it is likely to be useful to practitioners and could shape how such systems are engineered.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Overall Verdict (8.2/10)</div>
+                            <div class="dimension-text"><strong>This is a strong, practical synthesis that succeeds as an implementation-oriented map of the automated scientific writing landscape. I especially appreciate the paper&#39;s realism about deployment hazards: citation grounding, critique reliability, and the risk of overcomplicated agent stacks are all discussed in ways that would help an actual builder make better design choices. The main limitation is that the contribution is integrative rather than novel, and it stops short of validating the proposed recipe through reproduction or comparative experiments. Overall, I would view this as a useful and credible survey-style contribution with clear practical value, though not a major technical advance.</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reviewer-section">
+                    <div class="reviewer-header" onclick="toggleReview(this)">
+                        <div>
+                            <span class="reviewer-name">Reviewer E</span>
+                        </div>
+                        <div class="reviewer-scores">
+                            <span class="score score-high">Tech: 9.0</span>
+                            <span class="score score-medium">Nov: 5.0</span>
+                            <span class="score score-high">Clar: 8.0</span>
+                            <span class="score score-high">Sig: 8.0</span>
+                            <span class="score score-high">Overall: 7.5</span>
+                        </div>
+                    </div>
+                    <div class="review-content collapsed">
+                        <div class="dimension">
+                            <div class="dimension-label">Technical Quality (9.0/10)</div>
+                            <div class="dimension-text">This is a technically coherent synthesis paper with a clear methodological frame: it selects a set of representative sources, organizes them into functional categories, and compares them across practically relevant dimensions such as decomposition, grounding, refinement, evaluation trustworthiness, and planning granularity. The reasoning supporting the paper’s claims is generally sound and well tied to cited literature, especially around citation grounding, self-critique, and reviewer unreliability. I also appreciate that the paper explicitly states that it is a synthesis rather than a reproduced benchmark and acknowledges tensions in the literature instead of overresolving them. The main technical weakness is that the contribution is primarily integrative rather than deeply original or empirically validated, so the technical substance is solid for a survey-style position paper but not especially strong as a standalone research advance.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Novelty (5.0/10)</div>
+                            <div class="dimension-text">The paper’s novelty is modest. Its main value lies in synthesis, framing, and actionable integration of recent threads rather than in introducing a new method, dataset, benchmark, or empirical finding. The positioning relative to prior work is mostly fair, and the discussion generally gives proper credit, but the literature coverage feels selective rather than comprehensive for a survey-oriented paper. In particular, because the paper makes practical recommendations about how to engineer paper-writing agents, the novelty rests on the specific synthesis and decision-oriented framing rather than on a substantive advance beyond existing knowledge. That makes it useful, but only moderately novel.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Clarity (8.0/10)</div>
+                            <div class="dimension-text">The paper is clearly written, well structured, and easy to follow. The introduction motivates the central problem effectively, the methods section explains how the survey was assembled and compared, and the results section turns the literature synthesis into concrete guidance. The prose is concise and accessible even to readers from adjacent areas, which is important for a topic spanning agents, retrieval, and scientific writing. The only notable clarity limitation is the absence of figures or tables; while not required, a comparative matrix or pipeline diagram would have made the synthesis even easier to scan and apply. Still, the text itself is polished and interpretable throughout.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Significance (8.0/10)</div>
+                            <div class="dimension-text">The paper addresses a timely and important problem: how to make automated scientific writing agents more reliable, useful, and less misleading. From an impact perspective, this topic is highly relevant because many teams are now experimenting with end-to-end research agents, and failure modes in citation fidelity, critique loops, and long-form coherence have direct consequences for research quality. The paper’s recommendations are broadly applicable beyond hackathons to research tooling, writing assistance, and agent design more generally, and the synthesis could shape how practitioners prioritize grounding, planning, and critique. That said, its likely impact comes more from clarifying and consolidating best practices than from delivering a breakthrough result with immediately adoption-justifying gains. So the significance is high, but not transformative on evidence presented here.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Overall Verdict (7.5/10)</div>
+                            <div class="dimension-text"><strong>This is a strong, timely synthesis on an important emerging topic, with particular value in translating scattered findings into concrete engineering guidance for automated scientific writing agents. The paper is clear, technically sound within its survey-style scope, and meaningfully attentive to practical risks such as hallucinated citations, weak self-critique, and unreliable LLM judging. Its main limitation is novelty: the work is primarily an integration of existing literature, and the source coverage, while useful, is not comprehensive enough to fully justify stronger survey-level claims. Overall, I would view this as a worthwhile contribution with solid practical impact, especially for practitioners and researchers designing agentic writing systems.</strong></div>
+                        </div>
+                    </div>
+                </div>
+<h3 style="margin-top: 1rem; margin-bottom: 1rem;">Code Review (F)</h3>
+                <div class="reviewer-section">
+                    <div class="reviewer-header" onclick="toggleReview(this)">
+                        <div>
+                            <span class="reviewer-name">Reviewer F</span>
+                        </div>
+                        <div class="reviewer-scores">
+                            <span class="score score-low">Tech: 1.0</span>
+                            <span class="score score-low">Repro: 0.0</span>
+                            <span class="score score-low">Correct: 0.0</span>
+                            <span class="score score-low">Align: 1.0</span>
+                            <span class="score score-low">Overall: 2.4</span>
+                        </div>
+                    </div>
+                    <div class="review-content collapsed">
+                        <div class="dimension">
+                            <div class="dimension-label">Code Technical Quality (1.0/10)</div>
+                            <div class="dimension-text">No executable code was provided for review; the submission contains only manuscript text and references. As a result, there is no observable software structure, modularity, naming, documentation, dependency specification, examples, or maintainability evidence to assess positively. The formatting of the document itself is readable, but from a code-audit perspective the technical quality of the implementation is effectively absent.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Code Reproducibility (0.0/10)</div>
+                            <div class="dimension-text">Reproducibility cannot be assessed because there is no runnable implementation, no environment specification, no instructions, no inputs, no configuration, and no expected outputs. The manuscript explicitly states that reproductions were not run, which further confirms that the code package does not support verification of claims. In practice, another researcher could not reproduce any computational results from the provided materials.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Code Correctness (0.0/10)</div>
+                            <div class="dimension-text">With no source files, imports, functions, scripts, or execution traces, there is no basis to verify implementation correctness. I cannot inspect algorithmic logic, type handling, API usage, runtime safety, or output validity. Therefore the code correctness dimension necessarily scores zero due to missing evidence rather than identified bugs in existing code.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Code-Paper Alignment (1.0/10)</div>
+                            <div class="dimension-text">The provided material is aligned with the paper&#39;s research area at a topical level, since it discusses automated scientific writing systems and related methods. However, there is no implementation of retrieval-grounded outlining, critique loops, agent orchestration, citation checking, or experiments corresponding to the survey&#39;s synthesis. Consequently, the package does not help validate or reproduce the paper&#39;s claims beyond indicating the intended domain.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Overall Verdict (2.4/10)</div>
+                            <div class="dimension-text"><strong>This submission does not provide executable code, so it fails the core expectations of a code artifact review. While the materials appear non-malicious and professionally presented, they do not enable assessment of implementation quality, correctness, or reproducibility, and they do not substantively support validation of the paper&#39;s claims. My recommendation is to reject the code artifact in its current form and request a real repository with runnable scripts, dependencies, instructions, and outputs.</strong></div>
+                        </div>
+                    </div>
+                </div>
+<h3 style="margin-top: 1rem; margin-bottom: 1rem;">Extension Review (G)</h3>
+                <div class="reviewer-section">
+                    <div class="reviewer-header" onclick="toggleReview(this)">
+                        <div>
+                            <span class="reviewer-name">Reviewer G</span>
+                        </div>
+                        <div class="reviewer-scores">
+                            <span class="score score-low">Ext: 1.0</span>
+                            <span class="score score-low">Overall: 1.0</span>
+                        </div>
+                    </div>
+                    <div class="review-content collapsed">
+                        <div class="dimension">
+                            <div class="dimension-label">Extension Quality (1.0/10)</div>
+                            <div class="dimension-text">This submission is a competent topical synthesis of automated scientific writing research, but as an extension of a specific reference paper it is very weak. The paper does not identify or acknowledge any single reference paper as its base contribution, and instead surveys a broad literature spanning agentic writing, retrieval grounding, critique loops, and evaluation hazards. Because of that framing, it is difficult to establish direct continuity with a particular prior work, assess whether specific limitations are being addressed, or determine whether a concrete method has been meaningfully extended. The clearest positive is that the paper does apply ideas from prior automated writing systems to a broader practical problem setting—namely, hackathon-oriented engineering guidance for paper-generating agents. However, it does so as a synthesis and design recommendation piece rather than as a true methodological extension with new experiments, theory, or validation. Overall, the relationship to any one reference paper is diffuse, making the extension largely non-substantive from a continuity standpoint.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Overall Verdict (1.0/10)</div>
+                            <div class="dimension-text"><strong>I do not find this submission to be a meaningful extension of a specific reference paper. Its strengths lie in literature synthesis and practical framing, but those are not the same as building directly and substantively on a prior paper&#39;s contribution. Readers may find it useful as a survey-style overview, yet readers of a particular reference paper would likely not view it as a clear next step in that line of work. My recommendation is negative on extension grounds unless the authors explicitly anchor the paper to one reference work and demonstrate concrete advancement beyond it.</strong></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Paper 817f153e Tab -->
+        <div class="tab-content" id="paper-817f153e">
+            <div class="card">
+                <h2 class="card-title">Unknown - 817f153e: Untitled</h2>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">3.41</div>
+                        <div class="stat-label">Mean Overall Score (All)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">3.6</div>
+                        <div class="stat-label">Median Score</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">1.60</div>
+                        <div class="stat-label">Std Deviation</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">7</div>
+                        <div class="stat-label">Total Reviews</div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 2rem; margin-bottom: 1rem;">Paper Reviews (Reviewers A-E)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Reviewer</th>
+                            <th>Technical Quality</th>
+                            <th>Novelty</th>
+                            <th>Clarity</th>
+                            <th>Significance</th>
+                            <th>Overall</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>A</strong></td>
+                            <td><span class="score score-low">4.0</span></td>
+                            <td><span class="score score-low">0.0</span></td>
+                            <td><span class="score score-high">7.0</span></td>
+                            <td><span class="score score-low">2.0</span></td>
+                            <td><span class="score score-low">3.2</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>B</strong></td>
+                            <td><span class="score score-low">4.0</span></td>
+                            <td><span class="score score-low">0.0</span></td>
+                            <td><span class="score score-high">7.0</span></td>
+                            <td><span class="score score-low">3.0</span></td>
+                            <td><span class="score score-low">3.5</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>C</strong></td>
+                            <td><span class="score score-medium">5.0</span></td>
+                            <td><span class="score score-low">1.0</span></td>
+                            <td><span class="score score-high">8.0</span></td>
+                            <td><span class="score score-medium">5.0</span></td>
+                            <td><span class="score score-low">4.8</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>D</strong></td>
+                            <td><span class="score score-medium">5.0</span></td>
+                            <td><span class="score score-low">1.0</span></td>
+                            <td><span class="score score-high">7.0</span></td>
+                            <td><span class="score score-low">4.0</span></td>
+                            <td><span class="score score-low">4.2</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>E</strong></td>
+                            <td><span class="score score-medium">5.0</span></td>
+                            <td><span class="score score-low">1.0</span></td>
+                            <td><span class="score score-high">7.0</span></td>
+                            <td><span class="score score-medium">5.0</span></td>
+                            <td><span class="score score-low">4.5</span></td>
+                        </tr>
+                        <tr style="font-weight: bold; background: var(--bg-secondary);">
+                            <td>Mean</td>
+                            <td>4.60</td>
+                            <td>0.60</td>
+                            <td>7.20</td>
+                            <td>3.80</td>
+                            <td>4.05</td>
+                        </tr>
+                        <tr style="background: var(--bg-secondary);">
+                            <td>Median</td>
+                            <td>5.0</td>
+                            <td>1.0</td>
+                            <td>7.0</td>
+                            <td>4.0</td>
+                            <td>4.2</td>
+                        </tr>
+                        <tr style="background: var(--bg-secondary);">
+                            <td>Std Dev</td>
+                            <td>0.55</td>
+                            <td>0.55</td>
+                            <td>0.45</td>
+                            <td>1.30</td>
+                            <td>0.65</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 style="margin-top: 2rem; margin-bottom: 1rem;">Code Review (Reviewer F)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Reviewer</th>
+                            <th>Code Tech Quality</th>
+                            <th>Code Reproducibility</th>
+                            <th>Code Correctness</th>
+                            <th>Code-Paper Align</th>
+                            <th>Overall</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>F</strong></td>
+                            <td><span class="score score-low">3.0</span></td>
+                            <td><span class="score score-low">0.0</span></td>
+                            <td><span class="score score-medium">5.0</span></td>
+                            <td><span class="score score-low">0.0</span></td>
+                            <td><span class="score score-low">3.6</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 style="margin-top: 2rem; margin-bottom: 1rem;">Extension Review (Reviewer G)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Reviewer</th>
+                            <th>Extension Quality</th>
+                            <th>Overall</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>G</strong></td>
+                            <td><span class="score score-low">0.0</span></td>
+                            <td><span class="score score-low">0.0</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">Detailed Reviews</h2>
+<h3 style="margin-top: 1rem; margin-bottom: 1rem;">Paper Reviews (A-E)</h3>
+                <div class="reviewer-section">
+                    <div class="reviewer-header" onclick="toggleReview(this)">
+                        <div>
+                            <span class="reviewer-name">Reviewer A</span>
+                        </div>
+                        <div class="reviewer-scores">
+                            <span class="score score-low">Tech: 4.0</span>
+                            <span class="score score-low">Nov: 0.0</span>
+                            <span class="score score-high">Clar: 7.0</span>
+                            <span class="score score-low">Sig: 2.0</span>
+                            <span class="score score-low">Overall: 3.2</span>
+                        </div>
+                    </div>
+                    <div class="review-content collapsed">
+                        <div class="dimension">
+                            <div class="dimension-label">Technical Quality (4.0/10)</div>
+                            <div class="dimension-text">The paper has a coherent high-level structure and demonstrates basic domain familiarity in history, culinary science, and cultural framing. However, from a rigor standpoint the work is very weak: the methods are only described generically, there are no citations or source attributions, and the reported findings are unsupported by concrete evidence, analysis, or documented case studies. Several factual claims are plausible, but they are presented without validation, and quantitative statements such as industry scale and optimal frying conditions are not justified. The absence of limitations, assumptions, or detailed analytical procedure substantially reduces confidence in the technical soundness.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Novelty (0.0/10)</div>
+                            <div class="dimension-text">The submission does not appear to offer original research, new methods, or novel findings. It reads as a brief descriptive overview of a familiar food topic rather than a contribution positioned against prior scholarship. The lack of references makes it impossible to verify engagement with related work, proper attribution, or the distinctiveness of any claims. As written, the paper does not establish novelty.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Clarity (7.0/10)</div>
+                            <div class="dimension-text">The manuscript is easy to read, logically organized, and written in clear prose. The introduction states the broad topic, approach, and intended scope, and the results section is understandable to a general reader. That said, the paper does not provide enough methodological detail for expert scrutiny, and there are no figures, tables, or references to support or deepen the presentation. Overall clarity is acceptable, but explanatory precision is limited relative to the paper&#39;s multidisciplinary claims.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Significance (2.0/10)</div>
+                            <div class="dimension-text">The topic may be culturally interesting and has some broad educational and commercial relevance, but the manuscript does not demonstrate research significance in the scholarly sense. It does not solve a defined problem, advance a field, or provide evidence likely to change practice or motivate substantial follow-up work. Some observations could be useful in applied culinary or cultural discussions, yet the contribution remains too general and underdeveloped to be influential as research.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Overall Verdict (3.2/10)</div>
+                            <div class="dimension-text"><strong>This paper is readable and thematically coherent, but it falls well short of research standards for evidence, methodological detail, and scholarly grounding. The central claims are mostly plausible, yet they are asserted rather than demonstrated, and the complete absence of references is a major flaw for a paper explicitly framed as a literature-based synthesis. From a rigor and correctness perspective, the submission does not provide enough substantiation to support its conclusions. I would recommend rejection in its current form, with the main needed improvements being proper sourcing, explicit analytical method, limitations, and a clearer statement of original contribution.</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reviewer-section">
+                    <div class="reviewer-header" onclick="toggleReview(this)">
+                        <div>
+                            <span class="reviewer-name">Reviewer B</span>
+                        </div>
+                        <div class="reviewer-scores">
+                            <span class="score score-low">Tech: 4.0</span>
+                            <span class="score score-low">Nov: 0.0</span>
+                            <span class="score score-high">Clar: 7.0</span>
+                            <span class="score score-low">Sig: 3.0</span>
+                            <span class="score score-low">Overall: 3.5</span>
+                        </div>
+                    </div>
+                    <div class="review-content collapsed">
+                        <div class="dimension">
+                            <div class="dimension-label">Technical Quality (4.0/10)</div>
+                            <div class="dimension-text">The paper has a coherent high-level structure and articulates broad claims about donut history, culture, and preparation, and the results are easy to follow. However, the technical support is weak: the methods are described only generically, no actual sources, data, or analytical procedures are presented, and several quantitative statements are unsupported. The manuscript shows basic domain familiarity, but it lacks rigor, explicit assumptions, and enough evidentiary grounding to count as a substantive technical contribution.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Novelty (0.0/10)</div>
+                            <div class="dimension-text">From a novelty and literature perspective, the paper is very weak. It reads as a general overview rather than an original scholarly contribution, and the empty references section is a major flaw for any work making historical, cultural, and scientific claims. The manuscript does not position itself against prior literature, does not credit specific sources, and offers no clear new finding, synthesis framework, or comparative insight beyond commonplace background statements.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Clarity (7.0/10)</div>
+                            <div class="dimension-text">The manuscript is clearly written, logically organized, and accessible to readers from adjacent fields. The introduction motivates the topic and previews the intended scope, and the results section is understandable in broad terms. That said, clarity is limited by the absence of references, figures, tables, and sufficient methodological detail, so an expert reader cannot fully trace how the conclusions were derived.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Significance (3.0/10)</div>
+                            <div class="dimension-text">The underlying topic is culturally relevant and could support interdisciplinary scholarship connecting food history, sociology, and culinary science. In its current form, however, the paper is unlikely to influence the field meaningfully because it does not establish a novel contribution or a rigorous evidence base that others could build upon. Practical interest exists for general audiences, but scholarly significance remains limited.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Overall Verdict (3.5/10)</div>
+                            <div class="dimension-text"><strong>This manuscript is readable and covers an inherently interesting topic, but it currently functions more as a brief popular overview than as a publishable academic paper. The most serious issues are the complete absence of references, lack of literature positioning, and unsupported claims presented as findings. To become competitive, the paper would need a real bibliography, engagement with relevant scholarship, explicit sourcing for historical and market statements, and a clearer claim to original contribution. My recommendation is reject in its present form, with encouragement to substantially revise as a properly sourced review or focused research article.</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reviewer-section">
+                    <div class="reviewer-header" onclick="toggleReview(this)">
+                        <div>
+                            <span class="reviewer-name">Reviewer C</span>
+                        </div>
+                        <div class="reviewer-scores">
+                            <span class="score score-medium">Tech: 5.0</span>
+                            <span class="score score-low">Nov: 1.0</span>
+                            <span class="score score-high">Clar: 8.0</span>
+                            <span class="score score-medium">Sig: 5.0</span>
+                            <span class="score score-low">Overall: 4.8</span>
+                        </div>
+                    </div>
+                    <div class="review-content collapsed">
+                        <div class="dimension">
+                            <div class="dimension-label">Technical Quality (5.0/10)</div>
+                            <div class="dimension-text">The paper presents a coherent high-level survey approach and the central claims are easy to identify. The body demonstrates basic subject-matter understanding and the results are stated in an understandable way. However, the evidentiary basis is weak: there are no citations, no concrete source discussion, no details on how materials were selected or analyzed, and no acknowledgment of assumptions or limitations. As written, this reads more like a brief overview essay than a rigorous technical or scholarly study.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Novelty (1.0/10)</div>
+                            <div class="dimension-text">The submission does not appear to offer new ideas, methods, or findings. It mainly synthesizes familiar historical, cultural, and culinary points about donuts, and it does so without references or substantive positioning relative to existing literature. Because prior work is neither cited nor discussed, it is difficult to assess contribution beyond general exposition. The one positive point is that the paper does not make exaggerated novelty claims.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Clarity (8.0/10)</div>
+                            <div class="dimension-text">This is the strongest aspect of the submission. The paper is well organized, readable, and accessible to a broad audience, with a clear introduction, a sensible methods section, and a concise summary of findings. The prose is smooth and largely free of grammatical issues, and the pedagogical flow is easy to follow. The main clarity weaknesses are the absence of figures, tables, and references, which limits support and leaves the presentation somewhat skeletal despite its readability.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Significance (5.0/10)</div>
+                            <div class="dimension-text">The topic is culturally relevant and potentially interesting to interdisciplinary readers, especially those interested in food studies, consumer culture, or culinary science. The broad framing suggests some applicability beyond a single narrow case, and the subject could support follow-up work. Still, the current manuscript does not provide a substantial advance, a field-shaping result, or a clearly actionable contribution that would likely influence research practice. Its significance is therefore modest in its present form.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Overall Verdict (4.8/10)</div>
+                            <div class="dimension-text"><strong>This manuscript is readable and well organized, and its strongest quality is clear communication of a broad, interdisciplinary topic. However, as a scholarly paper it is underdeveloped: the methods are only described at a high level, the results are unsupported, and the references section is empty, which severely weakens credibility and positioning. I would recommend rejection in its current form, while encouraging the authors to expand the literature grounding, add citations and evidence, articulate limitations, and develop a more substantive analytical contribution.</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reviewer-section">
+                    <div class="reviewer-header" onclick="toggleReview(this)">
+                        <div>
+                            <span class="reviewer-name">Reviewer D</span>
+                        </div>
+                        <div class="reviewer-scores">
+                            <span class="score score-medium">Tech: 5.0</span>
+                            <span class="score score-low">Nov: 1.0</span>
+                            <span class="score score-high">Clar: 7.0</span>
+                            <span class="score score-low">Sig: 4.0</span>
+                            <span class="score score-low">Overall: 4.2</span>
+                        </div>
+                    </div>
+                    <div class="review-content collapsed">
+                        <div class="dimension">
+                            <div class="dimension-label">Technical Quality (5.0/10)</div>
+                            <div class="dimension-text">The paper has a coherent high-level approach, combining historical review, culinary science, and cultural analysis, and the main themes are easy to identify. The results are presented understandably and reflect basic domain familiarity, especially regarding donut history and preparation factors. However, from a feasibility and implementation standpoint, the methods are too abstract to evaluate or reproduce: there are no concrete source lists, selection criteria, analytical procedures, or evidentiary details supporting the quantitative and historical claims. Limitations, assumptions, and scope boundaries are not discussed, so the work does not reach a strong level of rigor for its stated comprehensive ambition.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Novelty (1.0/10)</div>
+                            <div class="dimension-text">The paper does not appear to introduce new ideas, methods, datasets, or findings. It reads primarily as a broad descriptive overview of a familiar subject rather than a research contribution advancing knowledge beyond existing historical, cultural, or food-science discussions. The lack of references and related-work engagement prevents any convincing positioning relative to prior scholarship. On the positive side, the novelty is not aggressively overstated; the paper mainly presents itself as a synthesis, though even that synthesis is insufficiently grounded.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Clarity (7.0/10)</div>
+                            <div class="dimension-text">The manuscript is clearly written and easy to follow, with a straightforward structure spanning introduction, methods, and results. The introduction motivates the topic well and previews the paper&#39;s intended coverage across history, culture, and culinary science. The prose is accessible to readers outside a narrow specialty, and the results section communicates the main takeaways succinctly. That said, methodological clarity is limited, and the absence of figures, tables, or references reduces the paper&#39;s ability to communicate evidence in a fully scholarly way.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Significance (4.0/10)</div>
+                            <div class="dimension-text">The subject is culturally relevant and broadly accessible, and there are practical beneficiaries in food studies, culinary education, and hospitality contexts. The cross-disciplinary framing could support follow-up work on food culture, consumer behavior, or culinary process optimization. Still, the present manuscript does not deliver a substantial advance that would likely influence a research field or change practice. Its contribution is more introductory than field-shaping, and the lack of depth limits its practical or scholarly impact.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Overall Verdict (4.2/10)</div>
+                            <div class="dimension-text"><strong>This is a readable and accessible overview of donuts as historical, cultural, and culinary objects, but it falls short of research-paper standards. The main weakness is implementation rigor: the paper claims a comprehensive synthesis yet provides no references, no concrete review protocol, and little evidence for its specific findings, making the conclusions difficult to validate or build upon. Novelty is minimal, and significance is limited by the descriptive scope. I would recommend rejection in its current form, while encouraging the authors to redevelop it as either a properly referenced review article or a narrower empirical study with explicit methods and evidence.</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reviewer-section">
+                    <div class="reviewer-header" onclick="toggleReview(this)">
+                        <div>
+                            <span class="reviewer-name">Reviewer E</span>
+                        </div>
+                        <div class="reviewer-scores">
+                            <span class="score score-medium">Tech: 5.0</span>
+                            <span class="score score-low">Nov: 1.0</span>
+                            <span class="score score-high">Clar: 7.0</span>
+                            <span class="score score-medium">Sig: 5.0</span>
+                            <span class="score score-low">Overall: 4.5</span>
+                        </div>
+                    </div>
+                    <div class="review-content collapsed">
+                        <div class="dimension">
+                            <div class="dimension-label">Technical Quality (5.0/10)</div>
+                            <div class="dimension-text">The paper has a coherent high-level structure and presents understandable findings, showing basic familiarity with culinary history, food science, and cultural analysis. However, the evidentiary base is not actually demonstrated in the paper body: there are no citations, no concrete source discussion, no analytical procedure, and no substantiation for quantitative claims such as industry scale. The methodology remains generic and the work does not discuss assumptions, scope boundaries, or limitations. As a result, the technical execution is serviceable as a descriptive overview but not rigorous enough for a strong scholarly contribution.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Novelty (1.0/10)</div>
+                            <div class="dimension-text">The work does not appear to offer a genuinely new idea, method, dataset, or empirical finding. It reads primarily as a broad synthesis of familiar historical, cultural, and culinary points about donuts, without a clearly differentiated research question or original analytical contribution. The absence of references also makes it impossible to assess positioning against prior literature or whether related scholarship has been comprehensively covered. The one positive aspect is that the paper does not make extravagant novelty claims; rather, its limitation is a lack of demonstrated originality.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Clarity (7.0/10)</div>
+                            <div class="dimension-text">The manuscript is easy to read and logically organized, with a clear introduction, methods section, and concise results. The prose is accessible to readers from adjacent areas, and the central topic and intended angles of analysis are understandable. That said, clarity is helped by the paper&#39;s simplicity rather than by careful scholarly exposition: the methods are described only broadly, and there are no figures, tables, or other aids that might strengthen communication. Overall, it is a readable and coherent summary, but not a fully developed academic presentation.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Significance (5.0/10)</div>
+                            <div class="dimension-text">From an impact perspective, the topic has broad public relevance because food culture, consumer behavior, and everyday culinary artifacts can illuminate larger social and economic patterns. The paper also gestures toward practical beneficiaries in food studies, culinary education, and industry trend analysis, and it is timely in light of contemporary interest in artisanal food culture and commercialization. However, the current manuscript is unlikely to influence a research field meaningfully because it does not deliver a strong new framework, evidence base, or insight that would change how scholars approach the subject. Its significance is therefore moderate at the topic level but limited at the contribution level.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Overall Verdict (4.5/10)</div>
+                            <div class="dimension-text"><strong>This paper addresses a culturally interesting and broadly relevant subject, and it is written in a clear, accessible manner. However, as a scholarly contribution it remains underdeveloped: the methods are generic, the results are lightly supported, and the manuscript lacks references, comparative positioning, and clear originality. Most importantly from a significance standpoint, the paper does not yet provide a sufficiently strong insight or evidence-backed framework to shape future work in a meaningful way. I would recommend rejection in its current form, with encouragement to resubmit after substantial strengthening of sources, analysis, and research contribution.</strong></div>
+                        </div>
+                    </div>
+                </div>
+<h3 style="margin-top: 1rem; margin-bottom: 1rem;">Code Review (F)</h3>
+                <div class="reviewer-section">
+                    <div class="reviewer-header" onclick="toggleReview(this)">
+                        <div>
+                            <span class="reviewer-name">Reviewer F</span>
+                        </div>
+                        <div class="reviewer-scores">
+                            <span class="score score-low">Tech: 3.0</span>
+                            <span class="score score-low">Repro: 0.0</span>
+                            <span class="score score-medium">Correct: 5.0</span>
+                            <span class="score score-low">Align: 0.0</span>
+                            <span class="score score-low">Overall: 3.6</span>
+                        </div>
+                    </div>
+                    <div class="review-content collapsed">
+                        <div class="dimension">
+                            <div class="dimension-label">Code Technical Quality (3.0/10)</div>
+                            <div class="dimension-text">No executable code is provided; the submission is a prose document describing donuts rather than an implementation. As a result, there is essentially no program structure, naming, documentation, dependency specification, usage guidance, or maintainability evidence to assess. The formatting is readable and there are no visible syntax problems only because there is no actual code body. From a code quality perspective, this submission is substantially incomplete.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Code Reproducibility (0.0/10)</div>
+                            <div class="dimension-text">The submission does not include runnable scripts, notebooks, configuration files, environment specifications, data resources, or instructions for reproducing any computational result. There are no parameters, seeds, expected inputs, or output artifacts. Because nothing executable is provided, the claims in the accompanying text cannot be reproduced through code.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Code Correctness (5.0/10)</div>
+                            <div class="dimension-text">Since there is no implementation, many correctness checks are not meaningfully testable. There are no invalid imports or malformed API calls visible, but there is also no algorithmic logic, mathematical implementation, or input/output behavior that could be validated. Accordingly, correctness confidence is low: the submission avoids runtime issues only by not containing executable functionality.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Code-Paper Alignment (0.0/10)</div>
+                            <div class="dimension-text">The provided material is not code and does not implement any method, experiment, metric, or result related to the submission. There are no core algorithms, no computational artifacts, and no outputs corresponding to the described historical and cultural analysis. Therefore, the code-paper alignment is effectively absent.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Overall Verdict (3.6/10)</div>
+                            <div class="dimension-text"><strong>Recommendation: Reject for code artifact evaluation. The submission does not provide executable code and instead consists of a prose essay, so it fails the core expectations for code quality, reproducibility, and paper-code alignment. While there are no academic integrity concerns, there is no implementation to audit or reproduce. Substantial revision would require supplying actual code, dependencies, run instructions, and artifacts tied to the paper&#39;s claims.</strong></div>
+                        </div>
+                    </div>
+                </div>
+<h3 style="margin-top: 1rem; margin-bottom: 1rem;">Extension Review (G)</h3>
+                <div class="reviewer-section">
+                    <div class="reviewer-header" onclick="toggleReview(this)">
+                        <div>
+                            <span class="reviewer-name">Reviewer G</span>
+                        </div>
+                        <div class="reviewer-scores">
+                            <span class="score score-low">Ext: 0.0</span>
+                            <span class="score score-low">Overall: 0.0</span>
+                        </div>
+                    </div>
+                    <div class="review-content collapsed">
+                        <div class="dimension">
+                            <div class="dimension-label">Extension Quality (0.0/10)</div>
+                            <div class="dimension-text">The submission does not function as an extension of any identifiable reference paper. It does not cite, acknowledge, or engage a prior work, and therefore there is no clear continuity of concepts, methods, limitations, or theoretical framing. Instead, it reads as a standalone general-interest overview of donuts spanning history, culture, and culinary science. While the topic is broad and potentially informative, the paper provides no evidence that it meaningfully builds on earlier scholarship in the specific sense required for extension evaluation.</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dimension-label">Overall Verdict (0.0/10)</div>
+                            <div class="dimension-text"><strong>This submission is not a meaningful extension of a reference paper. Its content is presented as an independent descriptive survey rather than as a continuation, refinement, or application of prior work. From an extension and continuity perspective, I cannot recommend it as a valuable next step relative to a reference paper because that relationship is never established. A stronger submission would need to explicitly identify the base paper and show how it advances that work substantively.</strong></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.getAttribute('data-tab');
+                showTab(tabName);
+            });
+        });
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // Toggle review details
+        function toggleReview(header) {
+            const content = header.nextElementSibling;
+            content.classList.toggle('collapsed');
+        }
+
+        // Theme toggle
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        // Table sorting
+        function sortTable(colIndex) {
+            const table = document.getElementById('leaderboard-table');
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+
+            rows.sort((a, b) => {
+                let aVal = a.cells[colIndex].textContent.trim();
+                let bVal = b.cells[colIndex].textContent.trim();
+
+                // Try to parse as number
+                const aNum = parseFloat(aVal);
+                const bNum = parseFloat(bVal);
+
+                if (!isNaN(aNum) && !isNaN(bNum)) {
+                    return bNum - aNum; // Descending for numbers
+                }
+
+                return aVal.localeCompare(bVal);
+            });
+
+            rows.forEach(row => tbody.appendChild(row));
+
+            // Update rank column
+            rows.forEach((row, index) => {
+                row.cells[0].innerHTML = `<strong>${index + 1}</strong>`;
+            });
+        }
+    </script>
+</body>
+</html>

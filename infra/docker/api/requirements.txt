@@ -1,0 +1,16 @@
+# Cloud API dependencies. Intentionally minimal — torch/transformers/etc
+# from the top-level pyproject are only used by team CLI, not the API.
+fastapi>=0.115,<1.0
+uvicorn[standard]>=0.30,<1.0
+pydantic>=2.7,<3.0
+
+# Database
+psycopg[binary]>=3.2,<4.0
+sqlalchemy>=2.0,<3.0
+
+# AWS — boto3 for Secrets Manager / Cognito IDP, jose for Cognito JWT verify
+boto3>=1.35,<2.0
+python-jose[cryptography]>=3.3,<4.0
+
+# Used by auth.py to fetch the Cognito JWKS at boot
+httpx>=0.27,<1.0
