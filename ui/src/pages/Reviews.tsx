@@ -1,6 +1,6 @@
 const rounds = [
   { n: 1, href: "/reviews/round-1.html", live: true },
-  { n: 2, href: "/reviews/round-2.html", live: false },
+  { n: 2, href: "/reviews/round-2.html", live: true },
   { n: 3, href: "/reviews/round-3.html", live: false },
 ];
 
